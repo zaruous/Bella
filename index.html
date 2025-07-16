@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voice Assistant</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- 引入 Font Awesome 图标库，用于麦克风图标 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+
+    <!-- 视频背景 -->
+    <video autoplay muted loop id="bg-video">
+        <!-- 初始可以留空，或放一个默认视频 -->
+        <source id="video-source" src="" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+
+    <!-- 内容层，覆盖在视频之上 -->
+    <div class="content-overlay">
+
+        <!-- 顶部好感度条 -->
+        <header class="top-bar">
+            <label for="favorability-bar">Favorability</label>
+            <div class="progress-container">
+                <div class="progress-fill" id="favorability-bar"></div>
+            </div>
+        </header>
+
+        <!-- 中间区域，用于放置上传按钮 -->
+        <main class="center-content">
+            <label for="video-upload" class="upload-button">Change Background</label>
+            <input type="file" id="video-upload" accept="video/*" hidden>
+        </main>
+
+        <!-- 底部麦克风和链接 -->
+        <footer class="bottom-bar">
+            <button class="mic-button" id="mic-button" aria-label="Start Listening">
+                <i class="fas fa-microphone"></i>
+            </button>
+            <a href="https://x.com/jackywine" target="_blank" rel="noopener noreferrer" class="footer-credit">
+                @jackywine
+            </a>
+        </footer>
+
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
