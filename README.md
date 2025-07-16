@@ -1,5 +1,5 @@
 
-<img width="1024" height="1536" alt="Generated image" src="https://github.com/user-attachments/assets/fc8f2ba4-43c5-4865-90d9-8408f1c23edf" />
+<img width="256" height="384" alt="Generated image" src="https://github.com/user-attachments/assets/fc8f2ba4-43c5-4865-90d9-8408f1c23edf" />
 
 # 贝拉 (Bella)：你的数字伴侣，正在唤醒
 
