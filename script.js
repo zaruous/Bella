@@ -1,46 +1,35 @@
 document.addEventListener('DOMContentLoaded', function() {
     
     // 获取需要的 DOM 元素
-    const videoUploadInput = document.getElementById('video-upload');
     const bgVideo = document.getElementById('bg-video');
     const videoSource = document.getElementById('video-source');
     const micButton = document.getElementById('mic-button');
     const favorabilityBar = document.getElementById('favorability-bar');
-    const toggleFitButton = document.getElementById('toggle-fit-button');
-    const settingsButton = document.getElementById('settings-button');
-    const settingsDropdown = document.getElementById('settings-dropdown');
 
-    // --- 视频上传功能 ---
-    videoUploadInput.addEventListener('change', function(event) {
-        const file = event.target.files[0];
+    // 视频列表
+    const videoList = [
+        '视频资源/3D 建模图片制作.mp4',
+        '视频资源/生成跳舞视频.mp4'
+    ];
 
-        if (file) {
-            // 使用 URL.createObjectURL 为用户选择的本地文件创建一个临时的 URL
-            const fileURL = URL.createObjectURL(file);
-
-            // 设置 video 元素的 source
-            videoSource.setAttribute('src', fileURL);
-            
-            // 加载并播放新的视频
-            bgVideo.load();
-            bgVideo.play().catch(error => {
-                // 某些浏览器可能会阻止自动播放，这是一种友好的处理方式
-                console.error("Video play failed:", error);
-            });
+    // --- 视频随机播放功能 ---
+    bgVideo.addEventListener('ended', function() {
+        // 获取当前播放的视频
+        const currentVideo = videoSource.getAttribute('src');
+        
+        // 过滤掉当前视频，从剩下的视频中随机选择一个
+        let nextVideo = currentVideo;
+        while (nextVideo === currentVideo) {
+            const randomIndex = Math.floor(Math.random() * videoList.length);
+            nextVideo = videoList[randomIndex];
         }
-    });
-
-    // --- 视频适应模式切换功能 ---
-    let isFitHeight = false;
-    toggleFitButton.addEventListener('click', function() {
-        isFitHeight = !isFitHeight;
-        if (isFitHeight) {
-            bgVideo.style.objectFit = 'contain';
-            toggleFitButton.textContent = '适应宽度';
-        } else {
-            bgVideo.style.objectFit = 'cover';
-            toggleFitButton.textContent = '适应高度';
-        }
+        
+        // 设置新的视频源并播放
+        videoSource.setAttribute('src', nextVideo);
+        bgVideo.load();
+        bgVideo.play().catch(error => {
+            console.error("Video play failed:", error);
+        });
     });
 
     // --- 麦克风按钮交互和好感度条模拟 ---
