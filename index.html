@@ -30,8 +30,11 @@
 
         <!-- 中间区域，用于放置上传按钮 -->
         <main class="center-content">
-            <label for="video-upload" class="upload-button">Change Background</label>
-            <input type="file" id="video-upload" accept="video/*" hidden>
+            <div class="button-container">
+                <label for="video-upload" class="upload-button">更换背景</label>
+                <input type="file" id="video-upload" accept="video/*" hidden>
+                <button id="toggle-fit-button" class="upload-button">适应高度</button>
+            </div>
         </main>
 
         <!-- 底部麦克风和链接 -->

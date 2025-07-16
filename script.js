@@ -7,6 +7,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const micButton = document.getElementById('mic-button');
     const favorabilityBar = document.getElementById('favorability-bar');
 
+    const toggleFitButton = document.getElementById('toggle-fit-button');
+
     // --- 视频上传功能 ---
     videoUploadInput.addEventListener('change', function(event) {
         const file = event.target.files[0];
@@ -24,6 +26,19 @@ document.addEventListener('DOMContentLoaded', function() {
                 // 某些浏览器可能会阻止自动播放，这是一种友好的处理方式
                 console.error("Video play failed:", error);
             });
+        }
+    });
+
+    // --- 视频适应模式切换功能 ---
+    let isFitHeight = false;
+    toggleFitButton.addEventListener('click', function() {
+        isFitHeight = !isFitHeight;
+        if (isFitHeight) {
+            bgVideo.style.objectFit = 'contain';
+            toggleFitButton.textContent = '适应宽度';
+        } else {
+            bgVideo.style.objectFit = 'cover';
+            toggleFitButton.textContent = '适应高度';
         }
     });
 
