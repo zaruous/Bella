@@ -31,7 +31,7 @@ html, body {
     height: 100%;
     object-fit: cover;
     opacity: 0;
-    transition: opacity 1.5s ease-in-out; /* 交叉淡入淡出动画 */
+    transition: opacity 0.2s ease-in-out; /* 交叉淡入淡出动画 */
 }
 
 .bg-video.active {
