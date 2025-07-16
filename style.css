@@ -64,65 +64,50 @@ html, body {
 .progress-fill {
     height: 100%;
     width: 65%; /* 初始好感度值 */
-    background: linear-gradient(90deg, #4facfe, #00f2fe);
+    background: linear-gradient(90deg, #ff9a9e, #fecfef); /* 粉色渐变 */
     border-radius: 10px;
     transition: width 0.5s ease-in-out;
 }
 
 /* --- 中间内容 (上传按钮) --- */
 .center-content {
-    /* 这个区域是弹性填充的，所以不需要太多样式 */
-}
-
-.button-container {
-    display: flex;
-    gap: 10px; /* 按钮之间的间距 */
-}
-
-.upload-button {
-    background-color: rgba(255, 255, 255, 0.2);
-    border: 1px solid rgba(255, 255, 255, 0.5);
-    padding: 8px 16px;
-    border-radius: 20px;
-    cursor: pointer;
-    font-size: 0.9rem;
-    transition: background-color 0.3s ease;
-}
-
-.upload-button:hover {
-    background-color: rgba(255, 255, 255, 0.4);
+    /* 这个区域现在是空的，可以移除或保留以备将来使用 */
 }
 
 /* --- 底部内容 --- */
 .bottom-bar {
     width: 100%;
     display: flex;
-    flex-direction: column;
-    align-items: center;
+    flex-direction: column; /* 垂直排列 */
+    justify-content: center; /* 水平居中 */
+    align-items: center; /* 垂直居中 */
+    position: relative; /* 为链接定位 */
 }
 
 .mic-button {
     width: 80px;
     height: 80px;
-    background: linear-gradient(45deg, #ff5f6d, #ffc371);
-    border: none;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
     cursor: pointer;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .mic-button:hover {
     transform: scale(1.1);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
 }
 
 .mic-button:active {
     transform: scale(1.05);
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
 }
 
 .mic-button i {
@@ -137,18 +122,18 @@ html, body {
 
 @keyframes pulse {
     0% {
-        box-shadow: 0 0 0 0 rgba(255, 95, 109, 0.7);
+        box-shadow: 0 0 0 0 rgba(255, 154, 158, 0.7);
     }
     70% {
-        box-shadow: 0 0 0 20px rgba(255, 95, 109, 0);
+        box-shadow: 0 0 0 20px rgba(255, 154, 158, 0);
     }
     100% {
-        box-shadow: 0 0 0 0 rgba(255, 95, 109, 0);
+        box-shadow: 0 0 0 0 rgba(255, 154, 158, 0);
     }
 }
 
 .footer-credit {
-    margin-top: 20px;
+    margin-top: 20px; /* 与麦克风按钮的间距 */
     color: rgba(255, 255, 255, 0.8);
     text-decoration: none;
     font-size: 1rem;

@@ -6,8 +6,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const videoSource = document.getElementById('video-source');
     const micButton = document.getElementById('mic-button');
     const favorabilityBar = document.getElementById('favorability-bar');
-
     const toggleFitButton = document.getElementById('toggle-fit-button');
+    const settingsButton = document.getElementById('settings-button');
+    const settingsDropdown = document.getElementById('settings-dropdown');
 
     // --- 视频上传功能 ---
     videoUploadInput.addEventListener('change', function(event) {
