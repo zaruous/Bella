@@ -9,7 +9,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // 视频列表
     const videoList = [
         '视频资源/3D 建模图片制作.mp4',
-        '视频资源/生成跳舞视频.mp4'
+        '视频资源/生成跳舞视频.mp4',
+        '视频资源/生成加油视频.mp4'
     ];
 
     // --- 视频随机播放功能 ---
