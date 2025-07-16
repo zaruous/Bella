@@ -1,3 +1,5 @@
+![Bella](Bellaicon/Generated image.webp)
+
 # 贝拉 (Bella)：你的数字伴侣，正在唤醒
 
 欢迎来到贝拉的创世纪。
