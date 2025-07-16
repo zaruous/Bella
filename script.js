@@ -1,4 +1,14 @@
 document.addEventListener('DOMContentLoaded', function() {
+
+    // --- 加载屏幕处理 ---
+    const loadingScreen = document.getElementById('loading-screen');
+    setTimeout(() => {
+        loadingScreen.style.opacity = '0';
+        // 在动画结束后将其隐藏，以防它阻碍交互
+        setTimeout(() => {
+            loadingScreen.style.display = 'none';
+        }, 500); // 这个时间应该匹配 CSS 中的 transition 时间
+    }, 1500); // 1.5秒后开始淡出
     
     // 获取需要的 DOM 元素
     let video1 = document.getElementById('video1');
