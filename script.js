@@ -15,6 +15,9 @@ document.addEventListener('DOMContentLoaded', function() {
     let video2 = document.getElementById('video2');
     const micButton = document.getElementById('mic-button');
     const favorabilityBar = document.getElementById('favorability-bar');
+    const floatingButton = document.getElementById('floating-button');
+    const menuContainer = document.getElementById('menu-container');
+    const menuItems = document.querySelectorAll('.menu-item');
 
     let activeVideo = video1;
     let inactiveVideo = video2;
@@ -134,6 +137,51 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
 
+    // --- 悬浮按钮交互 ---
+    floatingButton.addEventListener('click', (event) => {
+        event.stopPropagation(); // 防止事件冒泡到 document
+        menuContainer.classList.toggle('hidden');
+    });
+
+    menuItems.forEach(item => {
+        item.addEventListener('click', function() {
+            const videoSrc = this.getAttribute('data-video');
+            playSpecificVideo(videoSrc);
+            menuContainer.classList.add('hidden');
+        });
+    });
+
+    // 点击菜单外部区域关闭菜单
+    document.addEventListener('click', () => {
+        if (!menuContainer.classList.contains('hidden')) {
+            menuContainer.classList.add('hidden');
+        }
+    });
+
+    // 阻止菜单自身的点击事件冒泡
+    menuContainer.addEventListener('click', (event) => {
+        event.stopPropagation();
+    });
+
+
+    function playSpecificVideo(videoSrc) {
+        const currentVideoSrc = activeVideo.querySelector('source').getAttribute('src');
+        if (videoSrc === currentVideoSrc) return;
+
+        inactiveVideo.querySelector('source').setAttribute('src', videoSrc);
+        inactiveVideo.load();
+
+        inactiveVideo.addEventListener('canplaythrough', function onCanPlayThrough() {
+            inactiveVideo.removeEventListener('canplaythrough', onCanPlayThrough);
+            activeVideo.pause(); // 暂停当前视频，防止其 'ended' 事件触发切换
+            inactiveVideo.play().catch(error => console.error("Video play failed:", error));
+            activeVideo.classList.remove('active');
+            inactiveVideo.classList.add('active');
+            [activeVideo, inactiveVideo] = [inactiveVideo, activeVideo];
+            activeVideo.addEventListener('ended', switchVideo, { once: true });
+        }, { once: true });
+    }
+
     // --- 情感分析与反应 ---
     const positiveWords = ['开心', '高兴', '喜欢', '太棒了', '你好', '漂亮'];
     const negativeWords = ['难过', '生气', '讨厌', '伤心'];
@@ -179,6 +227,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         inactiveVideo.addEventListener('canplaythrough', function onCanPlayThrough() {
             inactiveVideo.removeEventListener('canplaythrough', onCanPlayThrough);
+            activeVideo.pause(); // 暂停当前视频，防止其 'ended' 事件触发切换
             inactiveVideo.play().catch(error => console.error("Video play failed:", error));
             activeVideo.classList.remove('active');
             inactiveVideo.classList.add('active');
