@@ -13,15 +13,29 @@ html, body {
 }
 
 /* --- 视频背景 --- */
-#bg-video {
+.video-container {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: -1; /* 将视频置于最底层 */
-    object-fit: cover; /* 默认填满整个屏幕（裁剪），JS会切换它 */
-    background-color: #1a1a1a; /* 视频加载前的背景色 */
+    z-index: -1;
+    background-color: #1a1a1a;
+}
+
+.bg-video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transition: opacity 1.5s ease-in-out; /* 交叉淡入淡出动画 */
+}
+
+.bg-video.active {
+    opacity: 1;
 }
 
 /* --- 内容覆盖层 --- */

@@ -1,10 +1,13 @@
 document.addEventListener('DOMContentLoaded', function() {
     
     // 获取需要的 DOM 元素
-    const bgVideo = document.getElementById('bg-video');
-    const videoSource = document.getElementById('video-source');
+    let video1 = document.getElementById('video1');
+    let video2 = document.getElementById('video2');
     const micButton = document.getElementById('mic-button');
     const favorabilityBar = document.getElementById('favorability-bar');
+
+    let activeVideo = video1;
+    let inactiveVideo = video2;
 
     // 视频列表
     const videoList = [
@@ -13,25 +16,45 @@ document.addEventListener('DOMContentLoaded', function() {
         '视频资源/生成加油视频.mp4'
     ];
 
-    // --- 视频随机播放功能 ---
-    bgVideo.addEventListener('ended', function() {
-        // 获取当前播放的视频
-        const currentVideo = videoSource.getAttribute('src');
-        
-        // 过滤掉当前视频，从剩下的视频中随机选择一个
-        let nextVideo = currentVideo;
-        while (nextVideo === currentVideo) {
+    // --- 视频交叉淡入淡出播放功能 ---
+    function switchVideo() {
+        // 1. 选择下一个视频
+        const currentVideoSrc = activeVideo.querySelector('source').getAttribute('src');
+        let nextVideoSrc = currentVideoSrc;
+        while (nextVideoSrc === currentVideoSrc) {
             const randomIndex = Math.floor(Math.random() * videoList.length);
-            nextVideo = videoList[randomIndex];
+            nextVideoSrc = videoList[randomIndex];
         }
-        
-        // 设置新的视频源并播放
-        videoSource.setAttribute('src', nextVideo);
-        bgVideo.load();
-        bgVideo.play().catch(error => {
-            console.error("Video play failed:", error);
-        });
-    });
+
+        // 2. 设置不活动的 video 元素的 source
+        inactiveVideo.querySelector('source').setAttribute('src', nextVideoSrc);
+        inactiveVideo.load();
+
+        // 3. 当不活动的视频可以播放时，执行切换
+        inactiveVideo.addEventListener('canplaythrough', function onCanPlayThrough() {
+            // 确保事件只触发一次
+            inactiveVideo.removeEventListener('canplaythrough', onCanPlayThrough);
+
+            // 4. 播放新视频
+            inactiveVideo.play().catch(error => {
+                console.error("Video play failed:", error);
+            });
+
+            // 5. 切换 active class 来触发 CSS 过渡
+            activeVideo.classList.remove('active');
+            inactiveVideo.classList.add('active');
+
+            // 6. 更新角色
+            [activeVideo, inactiveVideo] = [inactiveVideo, activeVideo];
+
+            // 为新的 activeVideo 绑定 ended 事件
+            activeVideo.addEventListener('ended', switchVideo, { once: true });
+        }, { once: true }); // 使用 { once: true } 确保事件只被处理一次
+    }
+
+    // 初始启动
+    activeVideo.addEventListener('ended', switchVideo, { once: true });
+
 
     // --- 麦克风按钮交互和好感度条模拟 ---
     let isListening = false;
