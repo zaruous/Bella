@@ -85,7 +85,6 @@ html, body {
     justify-content: space-between; /* 顶部和底部分别对齐 */
     align-items: center;
     padding: 25px;
-    background-color: rgba(0, 0, 0, 0.35); /* 半透明黑色蒙版，确保文字清晰可见 */
     z-index: 1;
 }
 
