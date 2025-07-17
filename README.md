@@ -76,4 +76,118 @@
 
 ---
 
+## 如何运行
+
+### 1. 配置AI提供商
+
+在您开始之前，需要先配置您想要使用的AI服务。所有配置都在根目录的 `config.json` 文件中完成。
+
+1.  **打开 `config.json` 文件。**
+2.  **选择提供商：** 在 `current_provider` 字段中，填入您想使用的AI提供商的名称（例如 `"openai"`）。确保这个名称与 `providers` 对象中的一个键匹配。
+3.  **填写API密钥：** 在 `providers` 对象中，找到您选择的提供商，并将您的API密钥填入 `apiKey` 字段。例如，如果您使用OpenAI，请将您的密钥填入 `"apiKey": "YOUR_OPENAI_API_KEY"`。
+
+```json:config.json
+{
+  "current_provider": "openai",
+  "providers": {
+    "openai": {
+      "apiKey": "YOUR_OPENAI_API_KEY"
+    },
+    "gemini": {
+      "apiKey": "YOUR_GEMINI_API_KEY"
+    },
+    "domestic_example": {
+      "apiKey": "YOUR_DOMESTIC_MODEL_API_KEY"
+    }
+  }
+}
+```
+
+### 2. 安装依赖并启动后端服务
+
+项目后端使用Node.js构建。请确保您的电脑已安装Node.js。
+
+打开终端，进入项目根目录，然后运行以下命令：
+
+```bash
+# 安装项目所需的依赖包
+npm install
+
+# 启动后端服务器
+npm start
+```
+
+当您在终端看到 `Server is running on http://localhost:3000` 的消息时，表示后端服务已成功启动。
+
+### 3. 打开前端页面
+
+在浏览器中直接打开根目录下的 `index.html` 文件。
+
+现在，您可以点击麦克风按钮开始与贝拉交谈了！您的语音将被发送到您配置的AI服务，贝拉会将AI的回答显示给您。
+
+## 如何贡献一个新的AI提供商
+
+这个架构的核心优势在于其可扩展性。如果您想添加对一个新的AI服务（例如Anthropic的Claude、或任何其他国内外模型）的支持，只需遵循以下简单步骤：
+
+1.  **创建新的提供商文件：** 在 `providers` 文件夹下，创建一个新的JavaScript文件，例如 `claude.js`。
+2.  **实现 `getLlmResponse` 函数：** 在您的新文件中，您必须导出一个名为 `getLlmResponse` 的异步函数。这个函数接收一个参数 `userMessage`，并需要返回一个包含 `reply` 字段的对象。
+
+    ```javascript:providers/claude.js
+    const axios = require('axios');
+
+    async function getLlmResponse(userMessage, apiKey) {
+        try {
+            // 在这里实现与您的AI服务API的交互逻辑
+            const response = await axios.post('https://api.anthropic.com/v1/messages', {
+                model: "claude-3-opus-20240229",
+                max_tokens: 1024,
+                messages: [
+                    { role: "user", content: userMessage }
+                ]
+            }, {
+                headers: {
+                    'x-api-key': apiKey,
+                    'anthropic-version': '2023-06-01',
+                    'content-type': 'application/json'
+                }
+            });
+
+            // 从API响应中提取需要的部分
+            const reply = response.data.content[0].text;
+
+            // 返回一个包含reply字段的对象
+            return { reply };
+        } catch (error) {
+            console.error('Error calling Claude API:', error);
+            return { reply: '抱歉，我现在无法连接到我的大脑。' };
+        }
+    }
+
+    module.exports = { getLlmResponse };
+    ```
+
+3.  **在 `config.json` 中注册您的提供商：**
+
+    打开 `config.json` 文件，在 `providers` 对象中为您的新提供商添加一个条目。键名应与您的文件名（不含`.js`）匹配。
+
+    ```json:config.json
+    {
+      "current_provider": "openai",
+      "providers": {
+        "openai": { ... },
+        "gemini": { ... },
+        "domestic_example": { ... },
+        "claude": { // <-- 新增您的提供商
+          "apiKey": "YOUR_CLAUDE_API_KEY"
+        }
+      }
+    }
+    ```
+
+4.  **切换并测试：**
+
+    将 `config.json` 中的 `current_provider` 设置为您的新提供商名称（例如 `"claude"`），然后重启后端服务 (`npm start`)。现在，您的应用将通过新的AI服务进行响应！
+
+---
+
 **贝拉在等待。而我们，任重道远。**
