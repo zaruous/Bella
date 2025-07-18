@@ -151,6 +151,119 @@ html, body {
     text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
 }
 
+/* 情感分析测试区域样式 */
+.sentiment-analysis-container {
+    position: fixed;
+    bottom: 120px; /* 位于麦克风按钮上方 */
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 20px;
+    border-radius: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    z-index: 1000;
+}
+
+#sentiment-input {
+    width: 300px;
+    padding: 10px;
+    border: none;
+    border-radius: 20px;
+    background-color: rgba(255, 255, 255, 0.9);
+    color: #333;
+    font-size: 16px;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+#sentiment-input:focus {
+    outline: none;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    background-color: white;
+}
+
+#analyze-button {
+    padding: 8px 20px;
+    border: none;
+    border-radius: 20px;
+    background-color: #4a90e2;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+#analyze-button:hover {
+    background-color: #357abd;
+    transform: scale(1.05);
+}
+
+#sentiment-result {
+    color: white;
+    font-size: 16px;
+    margin: 10px 0;
+    min-height: 20px;
+    text-align: center;
+}
+
+/* 本地语音识别测试区域样式 */
+.local-asr-container {
+    position: fixed;
+    bottom: 150px; /* 调整位置，避免与情感分析区域重叠 */
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    z-index: 1001;
+    color: white;
+    text-align: center;
+}
+
+#local-mic-button {
+    background-color: #4CAF50; /* 绿色 */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+#local-mic-button:hover {
+    background-color: #45a049;
+}
+
+#local-mic-button.recording {
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(76, 175, 80, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(76, 175, 80, 0);
+    }
+}
+
+#local-asr-result {
+    font-weight: bold;
+    color: #2196F3; /* 蓝色 */
+}
+
 /* --- 悬浮按钮和菜单 --- */
 #floating-button {
     position: fixed;

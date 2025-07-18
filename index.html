@@ -43,6 +43,19 @@
             <p id="transcript"></p>
         </div>
 
+        <!-- 情感分析测试区域 -->
+        <div class="sentiment-analysis-container">
+            <input type="text" id="sentiment-input" placeholder="对我输入一些文字...">
+            <button id="analyze-button">分析情绪</button>
+            <p id="sentiment-result"></p>
+        </div>
+
+        <!-- 本地语音识别测试区域 -->
+        <div id="local-asr-container" class="local-asr-container">
+            <button id="local-mic-button">开始本地识别</button>
+            <p>本地识别结果: <span id="local-asr-result"></span></p>
+        </div>
+
         <!-- 悬浮球 -->
         <div id="floating-button">
             <i class="fas fa-bars"></i>
@@ -67,6 +80,6 @@
 
     </div>
 
-    <script src="script.js"></script>
+    <script type="module" src="script.js"></script>
 </body>
 </html>

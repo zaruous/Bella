@@ -1,3 +1,6 @@
+// 导入 Transformers.js 的 pipeline
+import { pipeline } from 'https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.1';
+
 document.addEventListener('DOMContentLoaded', function() {
 
     // --- 加载屏幕处理 ---
@@ -18,6 +21,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const floatingButton = document.getElementById('floating-button');
     const menuContainer = document.getElementById('menu-container');
     const menuItems = document.querySelectorAll('.menu-item');
+
+    // --- 情感分析元素 ---
+    const sentimentInput = document.getElementById('sentiment-input');
+    const analyzeButton = document.getElementById('analyze-button');
+    const sentimentResult = document.getElementById('sentiment-result');
 
     let activeVideo = video1;
     let inactiveVideo = video2;
@@ -193,6 +201,120 @@ document.addEventListener('DOMContentLoaded', function() {
         '视频资源/生成跳舞视频.mp4'
     ];
     const negativeVideo = '视频资源/负面/jimeng-2025-07-16-9418-双手叉腰，嘴巴一直在嘟囔，表情微微生气.mp4';
+
+    // --- 本地模型情感分析 ---
+    let classifier;
+    analyzeButton.addEventListener('click', async () => {
+        const text = sentimentInput.value;
+        if (!text) return;
+
+        sentimentResult.textContent = '正在分析中...';
+
+        // 第一次点击时，初始化分类器
+        if (!classifier) {
+            try {
+                classifier = await pipeline('sentiment-analysis');
+            } catch (error) {
+                console.error('模型加载失败:', error);
+                sentimentResult.textContent = '抱歉，模型加载失败了。';
+                return;
+            }
+        }
+
+        // 进行情感分析
+        try {
+            const result = await classifier(text);
+            // 显示最主要的情绪和分数
+            const primaryEmotion = result[0];
+            sentimentResult.textContent = `情绪: ${primaryEmotion.label}, 分数: ${primaryEmotion.score.toFixed(2)}`;
+        } catch (error) {
+            console.error('情感分析失败:', error);
+            sentimentResult.textContent = '分析时出错了。';
+        }
+    });
+
+
+    // --- 本地语音识别 --- //
+    const localMicButton = document.getElementById('local-mic-button');
+    const localAsrResult = document.getElementById('local-asr-result');
+
+    let recognizer = null;
+    let mediaRecorder = null;
+    let isRecording = false;
+
+    const handleRecord = async () => {
+        // 状态切换：如果正在录音，则停止
+        if (isRecording) {
+            mediaRecorder.stop();
+            isRecording = false;
+            localMicButton.textContent = '开始本地识别';
+            localMicButton.classList.remove('recording');
+            return;
+        }
+
+        // 初始化模型（仅一次）
+        if (!recognizer) {
+            localAsrResult.textContent = '正在加载语音识别模型...';
+            try {
+                recognizer = await pipeline('automatic-speech-recognition', 'Xenova/whisper-tiny');
+                localAsrResult.textContent = '模型加载完毕，请开始说话...';
+            } catch (error) {
+                console.error('模型加载失败:', error);
+                localAsrResult.textContent = '抱歉，模型加载失败了。';
+                return;
+            }
+        }
+
+        // 开始录音
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            mediaRecorder = new MediaRecorder(stream);
+            const audioChunks = [];
+
+            mediaRecorder.addEventListener("dataavailable", event => {
+                audioChunks.push(event.data);
+            });
+
+            mediaRecorder.addEventListener("stop", async () => {
+                const audioBlob = new Blob(audioChunks, { type: mediaRecorder.mimeType });
+                const arrayBuffer = await audioBlob.arrayBuffer();
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                
+                // 检查音频数据是否为空
+                if (arrayBuffer.byteLength === 0) {
+                    localAsrResult.textContent = '没有录制到音频，请重试。';
+                    return;
+                }
+
+                try {
+                    const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+                    const rawAudio = audioBuffer.getChannelData(0);
+    
+                    localAsrResult.textContent = '正在识别...';
+                    const output = await recognizer(rawAudio);
+                    localAsrResult.textContent = output.text || '未能识别出任何内容。';
+                } catch(e) {
+                    console.error('音频解码或识别失败:', e);
+                    localAsrResult.textContent = '处理音频时出错，请再试一次。';
+                }
+            });
+
+            mediaRecorder.start();
+            isRecording = true;
+            localMicButton.textContent = '正在录音... 点击停止';
+            localMicButton.classList.add('recording');
+
+        } catch (error) {
+            console.error('语音识别失败:', error);
+            localAsrResult.textContent = '无法访问麦克风或识别出错。';
+            isRecording = false; // 重置状态
+            localMicButton.textContent = '开始本地识别';
+            localMicButton.classList.remove('recording');
+        }
+    };
+
+    localMicButton.addEventListener('click', handleRecord);
+
 
     function analyzeAndReact(text) {
         let reaction = 'neutral'; // 默认为中性
