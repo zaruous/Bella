@@ -82,122 +82,39 @@ html, body {
     width: 100%;
     display: flex;
     flex-direction: column;
-    justify-content: space-between; /* 顶部和底部分别对齐 */
+    justify-content: center; /* 垂直居中 */
     align-items: center;
     padding: 25px;
     z-index: 1;
-}
-
-/* --- 顶部好感度条 --- */
-.top-bar {
-    width: 100%;
-    max-width: 500px;
-    text-align: left;
-}
-
-.top-bar label {
-    font-size: 1rem;
-    font-weight: 600;
-    text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
-    margin-bottom: 8px;
-    display: block;
-}
-
-.progress-container {
-    width: 100%;
-    height: 12px;
-    background-color: rgba(255, 255, 255, 0.3);
-    border-radius: 10px;
-    overflow: hidden;
-}
-
-.progress-fill {
-    height: 100%;
-    width: 65%; /* 初始好感度值 */
-    background: linear-gradient(90deg, #ff9a9e, #fecfef); /* 粉色渐变 */
-    border-radius: 10px;
-    transition: width 0.5s ease-in-out;
-}
-
-/* --- 中间内容 (上传按钮) --- */
-.center-content {
-    /* 这个区域现在是空的，可以移除或保留以备将来使用 */
+    gap: 40px; /* 在识别结果和按钮之间添加一些间距 */
 }
 
 /* --- 语音识别结果显示 --- */
 .transcript-container {
-    position: absolute;
-    bottom: 180px; /* 放置在麦克风按钮上方 */
-    left: 50%;
-    transform: translateX(-50%);
     width: 80%;
     max-width: 600px;
-    padding: 15px;
-    background: rgba(0, 0, 0, 0.5);
-    border-radius: 10px;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 15px;
     text-align: center;
     opacity: 0;
-    transition: opacity 0.3s ease-in-out;
+    transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
     pointer-events: none; /* 默认不响应鼠标事件 */
+    transform: translateY(20px);
 }
 
 .transcript-container.visible {
     opacity: 1;
+    transform: translateY(0);
 }
 
 #transcript {
-    font-size: 1.2rem;
+    font-size: 1.5rem; /* 稍大一点的字体 */
     color: #fff;
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.6);
+    min-height: 50px; /* 给一个最小高度，防止没内容时跳动 */
+    line-height: 1.4;
 }
-
-/* 情感分析测试区域样式 */
-.sentiment-analysis-container {
-    position: fixed;
-    bottom: 120px; /* 位于麦克风按钮上方 */
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: rgba(0, 0, 0, 0.7);
-    padding: 20px;
-    border-radius: 15px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-    z-index: 1000;
-}
-
-#sentiment-input {
-    width: 300px;
-    padding: 10px;
-    border: none;
-    border-radius: 20px;
-    background-color: rgba(255, 255, 255, 0.9);
-    color: #333;
-    font-size: 16px;
-    text-align: center;
-    transition: all 0.3s ease;
-}
-
-#sentiment-input:focus {
-    outline: none;
-    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-    background-color: white;
-}
-
-#analyze-button {
-    padding: 8px 20px;
-    border: none;
-    border-radius: 20px;
-    background-color: #4a90e2;
-    color: white;
-    font-size: 16px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-#analyze-button:hover {
-    background-color: #357abd;
     transform: scale(1.05);
 }
 
