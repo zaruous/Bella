@@ -121,6 +121,8 @@ document.addEventListener('DOMContentLoaded', async function() {
                     // Let Bella think
                     const thinkingText = document.createElement('p');
                     thinkingText.textContent = '贝拉正在思考...';
+                    thinkingText.style.color = '#888';
+                    thinkingText.style.fontStyle = 'italic';
                     transcriptContainer.appendChild(thinkingText);
                     
                     const response = await bellaAI.think(userText);
@@ -128,19 +130,24 @@ document.addEventListener('DOMContentLoaded', async function() {
                     transcriptContainer.removeChild(thinkingText);
                     const bellaText = document.createElement('p');
                     bellaText.textContent = `贝拉: ${response}`;
+                    bellaText.style.color = '#ff6b9d';
+                    bellaText.style.fontWeight = 'bold';
+                    bellaText.style.marginTop = '10px';
                     transcriptContainer.appendChild(bellaText);
 
-                    // Let Bella speak
-                    const audioData = await bellaAI.speak(response);
-                    const blob = new Blob([audioData], { type: 'audio/wav' });
-                    const audioUrl = URL.createObjectURL(blob);
-                    const audio = new Audio(audioUrl);
-                    audio.play();
+                    // TTS功能暂时禁用，将在下一阶段激活
+                    // TODO: 激活语音合成功能
+                    // const audioData = await bellaAI.speak(response);
+                    // const blob = new Blob([audioData], { type: 'audio/wav' });
+                    // const audioUrl = URL.createObjectURL(blob);
+                    // const audio = new Audio(audioUrl);
+                    // audio.play();
 
                 } catch (error) {
                     console.error('Bella AI processing error:', error);
                     const errorText = document.createElement('p');
-                    errorText.textContent = '贝拉处理时遇到问题。';
+                    errorText.textContent = '贝拉处理时遇到问题，但她还在努力学习中...';
+                    errorText.style.color = '#ff9999';
                     transcriptContainer.appendChild(errorText);
                 }
             }

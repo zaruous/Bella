@@ -51,9 +51,9 @@ class BellaAI {
             throw error; // Re-throw the error to be caught by the caller
         }
 
-        // console.log('Loading LLM model...');
-        // this.llm = await pipeline('text2text-generation', 'Xenova/LaMini-Flan-T5-77M', { progress_callback: onProgress });
-        // console.log('LLM model loaded.');
+        console.log('Loading LLM model...');
+        this.llm = await pipeline('text2text-generation', 'Xenova/LaMini-Flan-T5-77M');
+        console.log('LLM model loaded.');
 
         // console.log('Loading TTS model...');
         // this.tts = await pipeline('text-to-speech', 'Xenova/speecht5_tts', { quantized: false, progress_callback: onProgress });
@@ -63,13 +63,32 @@ class BellaAI {
     }
 
     async think(prompt) {
-        const result = await this.llm(prompt, {
-            max_new_tokens: 100,
-            temperature: 0.7,
-            top_k: 50,
-            do_sample: true,
-        });
-        return result[0].generated_text;
+        if (!this.llm) {
+            return "我还在学习如何思考，请稍等片刻...";
+        }
+        
+        try {
+            // 为贝拉添加一些个性化的提示词
+            const bellaPrompt = `作为一个温暖、聪明的AI伙伴贝拉，请用简洁、亲切的中文回应：${prompt}`;
+            
+            const result = await this.llm(bellaPrompt, {
+                max_new_tokens: 50,
+                temperature: 0.8,
+                top_k: 40,
+                do_sample: true,
+            });
+            
+            // 清理生成的文本，移除重复的提示词部分
+            let response = result[0].generated_text;
+            if (response.includes(bellaPrompt)) {
+                response = response.replace(bellaPrompt, '').trim();
+            }
+            
+            return response || "我需要再想想...";
+        } catch (error) {
+            console.error('思考过程中出现错误:', error);
+            return "抱歉，我现在有点困惑，让我重新整理一下思路...";
+        }
     }
 
     async listen(audioData) {
