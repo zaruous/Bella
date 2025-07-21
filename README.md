@@ -1,4 +1,18 @@
+# Bella's Future Blueprint
 
+```mermaid
+mindmap
+  root((贝拉 Bella))
+    (核心能力 Core)
+      (小型快速大模型 Small & Fast LLM)
+      (记忆系统 Memory System)
+    (感知与交互 Perception & Interaction)
+      (极简交互 Minimalist UI)
+      (语音识别 Speech Recognition)
+      (语音合成 Speech Synthesis)
+```
+
+---
 <img width="256" height="384" alt="Generated image" src="https://github.com/user-attachments/assets/fc8f2ba4-43c5-4865-90d9-8408f1c23edf" />
 
 # 贝拉 (Bella)：你的数字伴侣，正在唤醒
