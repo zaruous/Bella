@@ -60,10 +60,10 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
         
         micButton.disabled = false;
-        transcriptDiv.textContent = '贝拉已准备好，请点击麦克风开始对话。';
+        transcriptDiv.textContent = '베라가 준비되었습니다. 마이크를 클릭하여 대화를 시작하세요.';
     } catch (error) {
         console.error('Failed to initialize Bella AI:', error);
-        transcriptDiv.textContent = 'AI模型加载失败，但聊天界面仍可使用。';
+        transcriptDiv.textContent = 'AI 모델 로딩에 실패했지만, 채팅 인터페이스는 여전히 사용할 수 있습니다.';
         
         // 即使AI失败，也提供基本的聊天功能
         if (chatInterface) {
@@ -72,10 +72,10 @@ document.addEventListener('DOMContentLoaded', async function() {
                 setTimeout(() => {
                     chatInterface.hideTypingIndicator();
                     const fallbackResponses = [
-                        '我的AI核心还在加载中，请稍后再试...',
-                        '抱歉，我现在无法正常思考，但我会努力学习的！',
-                        '我的大脑还在启动中，请给我一点时间...',
-                        '系统正在更新，暂时无法提供智能回复。'
+                        '제 AI 핵심이 아직 로딩 중입니다. 잠시 후 다시 시도해 주세요...',
+                        '죄송합니다. 현재 정상적으로 생각할 수 없지만, 열심히 배우겠습니다!',
+                        '아직 부팅 중입니다. 조금만 시간을 주시면 감사하겠습니다...',
+                        '시스템이 업데이트 중입니다. 현재 스마트 응답을 제공할 수 없습니다.'
                     ];
                     const randomResponse = fallbackResponses[Math.floor(Math.random() * fallbackResponses.length)];
                     chatInterface.addMessage('assistant', randomResponse);
@@ -184,9 +184,9 @@ document.addEventListener('DOMContentLoaded', async function() {
         chatTestBtn.addEventListener('click', () => {
             if (chatInterface) {
                 const testMessages = [
-                    '你好！我是贝拉，很高兴见到你！',
-                    '聊天界面工作正常，所有功能都已就绪。',
-                    '这是一条测试消息，用来验证界面功能。'
+                    '안녕하세요! 저는 벨라입니다. 만나서 반갑습니다!',
+                    '채팅 인터페이스가 정상적으로 작동하며, 모든 기능이 준비되었습니다.',
+                    '이 메시지는 인터페이스 기능을 테스트하기 위한 테스트 메시지입니다.'
                 ];
                 const randomMessage = testMessages[Math.floor(Math.random() * testMessages.length)];
                 chatInterface.addMessage('assistant', randomMessage);
@@ -197,7 +197,7 @@ document.addEventListener('DOMContentLoaded', async function() {
                     chatToggleBtn.innerHTML = '<i class="fas fa-times"></i><span>关闭</span>';
                 }
                 
-                console.log('测试消息已添加:', randomMessage);
+                console.log('테스트 메시지가 추가되었습니다:', randomMessage);
             }
         });
     }
@@ -243,7 +243,7 @@ document.addEventListener('DOMContentLoaded', async function() {
                 try {
                     // Let Bella think
                     const thinkingText = document.createElement('p');
-                    thinkingText.textContent = '贝拉正在思考...';
+                    thinkingText.textContent = '벨라 생각중...';
                     thinkingText.style.color = '#888';
                     thinkingText.style.fontStyle = 'italic';
                     transcriptContainer.appendChild(thinkingText);
@@ -252,7 +252,7 @@ document.addEventListener('DOMContentLoaded', async function() {
                     
                     transcriptContainer.removeChild(thinkingText);
                     const bellaText = document.createElement('p');
-                    bellaText.textContent = `贝拉: ${response}`;
+                    bellaText.textContent = `벨라: ${response}`;
                     bellaText.style.color = '#ff6b9d';
                     bellaText.style.fontWeight = 'bold';
                     bellaText.style.marginTop = '10px';

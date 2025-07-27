@@ -37,15 +37,15 @@ class ChatInterface {
                 <div class="bella-chat-title">
                     <div class="bella-avatar">💝</div>
                     <div class="bella-title-text">
-                        <h3>贝拉</h3>
-                        <span class="bella-status">在线</span>
+                        <h3>벨라</h3>
+                        <span class="bella-status">온라인</span>
                     </div>
                 </div>
                 <div class="bella-chat-controls">
-                    <button class="bella-settings-btn" title="设置">
+                    <button class="bella-settings-btn" title="설정">
                         <i class="fas fa-cog"></i>
                     </button>
-                    <button class="bella-minimize-btn" title="最小化">
+                    <button class="bella-minimize-btn" title="최소화">
                         <i class="fas fa-minus"></i>
                     </button>
                 </div>
@@ -53,13 +53,13 @@ class ChatInterface {
             <div class="bella-chat-messages"></div>
             <div class="bella-chat-input-container">
                 <div class="bella-input-wrapper">
-                    <input type="text" class="bella-message-input" placeholder="和贝拉聊聊天..." maxlength="500">
+                    <input type="text" class="bella-message-input" placeholder="베라와 이야기를 나누어 보세요..." maxlength="10000">
                     <button class="bella-send-btn" title="发送">
                         <i class="fas fa-paper-plane"></i>
                     </button>
                 </div>
                 <div class="bella-input-hint">
-                    按 Enter 发送，Shift + Enter 换行
+                    Enter 키를 눌러 전송합니다. Shift + Enter 키를 눌러 줄을 바꿉니다.
                 </div>
             </div>
         `;
@@ -81,9 +81,9 @@ class ChatInterface {
             <div class="bella-toggle-icon">
                 <i class="fas fa-comments"></i>
             </div>
-            <div class="bella-toggle-text">与贝拉聊天</div>
+            <div class="bella-toggle-text">벨라와 대화하기</div>
         `;
-        this.toggleButton.title = '打开聊天窗口';
+        this.toggleButton.title = '채팅 창을 열기';
         
         document.body.appendChild(this.toggleButton);
     }

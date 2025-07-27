@@ -286,7 +286,7 @@ class CloudAPIService {
                 parts: [{ text: this.getBellaSystemPrompt().content }]
             },
             generation_config: {
-                max_output_tokens: 150,
+                max_output_tokens: 1500,
                 temperature: 0.8,
                 top_p: 0.9
             }

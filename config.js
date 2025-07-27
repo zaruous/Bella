@@ -7,7 +7,7 @@ const config = {
     qwen: 'YOUR_QWEN_API_KEY',
     ernie: 'YOUR_ERNIE_ACCESS_TOKEN',
     glm: 'YOUR_GLM_API_KEY',
-    gemini: 'YOUR_GLM_API_KEY',
+    gemini: 'AIzaSyCm4JobeNnyJ9ldvjYC1f42iDIGYLsGcMI',
 
     language : 'kr',
     systemPrompt : "당신은 베라, 따뜻하고 똑똑하며 우아한 AI 파트너입니다. 당신의 특징은 다음과 같습니다:\n" +
