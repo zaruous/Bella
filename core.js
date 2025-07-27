@@ -3,6 +3,7 @@
 
 import { pipeline, env, AutoTokenizer, AutoModelForSpeechSeq2Seq } from './vendor/transformers.js';
 import CloudAPIService from './cloudAPI.js';
+import config  from './config.js';
 
 // 本地模型配置
 env.allowLocalModels = true;
@@ -26,7 +27,17 @@ class BellaAI {
     constructor() {
         this.cloudAPI = new CloudAPIService();
         this.useCloudAPI = false; // 默认使用本地模型
-        this.currentMode = 'casual'; // 聊天模式：casual, assistant, creative
+        this.currentMode = 'creative'; // 聊天模式：casual, assistant, creative
+        // Set API keys
+        for (const provider in config) {
+            if (Object.hasOwnProperty.call(config, provider)) {
+                const key = config[provider];
+                if (key && !key.startsWith('YOUR_')) {
+                    this.cloudAPI.setAPIKey(provider, key);
+                    this.useCloudAPI = true;
+                }
+            }
+        }
     }
 
     async init() {
@@ -105,7 +116,7 @@ class BellaAI {
     // 使用本地模型进行思考
     async thinkWithLocalModel(prompt) {
         if (!this.llm) {
-            return "我还在学习如何思考，请稍等片刻...";
+            return "저는 아직 생각하는 방법을 배우고 있습니다. 잠시만 기다려 주시세요...";
         }
         
         const bellaPrompt = this.enhancePromptForMode(prompt, true);
@@ -130,14 +141,14 @@ class BellaAI {
     enhancePromptForMode(prompt, isLocal = false) {
         const modePrompts = {
             casual: isLocal ? 
-                `作为一个温暖、可爱的AI伙伴贝拉，用轻松亲切的语气回应：${prompt}` :
-                `请用温暖、轻松的语气回应，就像一个贴心的朋友。保持简洁有趣：${prompt}`,
+                `따뜻하고 귀여운 AI 파트너 베라로서, 편안하고 친근한 어조로 응답합니다.：${prompt}` :
+                `따뜻하고 편안한 어조로 응답해 주세요, 마치 친절한 친구처럼. 간결하고 재미있게 유지해 주세요.：${prompt}`,
             assistant: isLocal ?
-                `作为智能助手贝拉，提供有用、准确的帮助：${prompt}` :
-                `作为一个专业但温暖的AI助手，提供准确有用的信息和建议：${prompt}`,
+                `지능형 어시스턴트 베라로서, 유용하고 정확한 도움을 제공합니다.：${prompt}` :
+                `전문적이면서도 친근한 AI 어시스턴트로서, 정확하고 유용한 정보와 조언을 제공합니다.：${prompt}`,
             creative: isLocal ?
-                `作为富有创意的AI伙伴贝拉，发挥想象力回应：${prompt}` :
-                `发挥创意和想象力，提供有趣、独特的回应和想法：${prompt}`
+                `창의적인 AI 파트너 베라로서, 상상력을 발휘해 응답합니다.：${prompt}` :
+                `창의성과 상상력을 발휘하여 재미있고 독특한 답변과 아이디어를 제공합니다.：${prompt}`
         };
         
         return modePrompts[this.currentMode] || modePrompts.casual;

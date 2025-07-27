@@ -2,6 +2,7 @@
 import { BellaAI } from './core.js';
 import { ChatInterface } from './chatInterface.js';
 
+
 document.addEventListener('DOMContentLoaded', async function() {
     // --- Get all necessary DOM elements first ---
     const transcriptDiv = document.getElementById('transcript');
@@ -41,7 +42,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     try {
         bellaAI = await BellaAI.getInstance();
         console.log('Bella AI 初始化成功');
-        
+
         // 设置聊天界面的AI回调函数
         if (chatInterface) {
             chatInterface.onMessageSend = async (message) => {
@@ -210,7 +211,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     if (SpeechRecognition) {
         recognition = new SpeechRecognition();
         recognition.continuous = true; // 持续识别
-        recognition.lang = 'zh-CN'; // 设置语言为中文
+        recognition.lang = 'ko-KR'; // 设置语言为中文
         recognition.interimResults = true; // 获取临时结果
 
         recognition.onresult = async (event) => {

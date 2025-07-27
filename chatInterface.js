@@ -215,12 +215,12 @@ class ChatInterface {
 
     // 添加欢迎消息
     addWelcomeMessage() {
-        this.addMessage('assistant', '你好！我是贝拉，你的AI伙伴。很高兴见到你！有什么想聊的吗？', true);
+        this.addMessage('assistant', '안녕하세요! 저는 베라입니다, 당신의 AI 파트너입니다. 만나서 반갑습니다! 이야기하고 싶은 것이 있나요?', true);
     }
 
     // 切换聊天窗口显示/隐藏
     toggle() {
-        console.log('ChatInterface.toggle() 被调用');
+        console.log('ChatInterface.toggle() 호출됨');
         console.log('切换前 isVisible:', this.isVisible);
         
         if (this.isVisible) {
@@ -234,7 +234,7 @@ class ChatInterface {
 
     // 显示聊天窗口
     show() {
-        console.log('ChatInterface.show() 被调用');
+        console.log('ChatInterface.show() 호출됨');
         console.log('显示前 isVisible:', this.isVisible);
         console.log('显示前 chatContainer.className:', this.chatContainer.className);
         

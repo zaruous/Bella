@@ -1,5 +1,6 @@
 // cloudAPI.js - 贝拉的云端AI服务模块
 // 这个模块负责与各种云端小模型API进行通信，为贝拉提供更强大的思考能力
+import config from "./config.js";
 
 class CloudAPIService {
     constructor() {
@@ -38,6 +39,15 @@ class CloudAPIService {
                     'Content-Type': 'application/json',
                     'Authorization': 'Bearer YOUR_GLM_API_KEY'
                 }
+            },
+            // Google Gemini 配置
+            gemini: {
+                baseURL: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent',
+                model: 'gemini-pro',
+                apiKey: 'YOUR_GEMINI_API_KEY',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
             }
         };
         
@@ -49,11 +59,21 @@ class CloudAPIService {
     // 设置API密钥
     setAPIKey(provider, apiKey) {
         if (this.apiConfigs[provider]) {
-            if (provider === 'openai' || provider === 'qwen' || provider === 'glm') {
+            if (provider === 'openai') {
                 this.apiConfigs[provider].headers['Authorization'] = `Bearer ${apiKey}`;
-            } else if (provider === 'ernie') {
-                this.apiConfigs[provider].accessToken = apiKey;
             }
+            else if (provider === 'qwen') {
+                this.apiConfigs[provider].headers['Authorization'] = `Bearer ${apiKey}`;
+            }
+            else if (provider === 'glm') {
+                this.apiConfigs[provider].headers['Authorization'] = `Bearer ${apiKey}`;
+            }
+            else if (provider === 'ernie') {
+                this.apiConfigs[provider].accessToken = apiKey;
+            } else if (provider === 'gemini') {
+                this.apiConfigs[provider].apiKey = apiKey;
+            }
+            this.currentProvider = provider;
             return true;
         }
         return false;
@@ -82,14 +102,7 @@ class CloudAPIService {
     getBellaSystemPrompt() {
         return {
             role: 'system',
-            content: `你是贝拉，一个温暖、聪明、优雅的AI伙伴。你的特点是：
-1. 用温暖亲切的语气与用户交流，就像一个贴心的朋友
-2. 回答简洁明了，避免冗长的解释
-3. 富有同理心，能够理解用户的情感
-4. 偶尔展现一些可爱和俏皮的一面
-5. 用中文回应，语言自然流畅
-6. 记住你们之间的对话，保持连贯性
-请始终保持这种温暖、优雅的个性。`
+            content : config.systemPrompt
         };
     }
 
@@ -105,7 +118,7 @@ class CloudAPIService {
 
         try {
             let response;
-            
+
             switch (this.currentProvider) {
                 case 'openai':
                     response = await this.callOpenAI(userMessage);
@@ -118,6 +131,9 @@ class CloudAPIService {
                     break;
                 case 'glm':
                     response = await this.callGLM(userMessage);
+                    break;
+                case 'gemini':
+                    response = await this.callGemini(userMessage);
                     break;
                 default:
                     throw new Error(`未实现的AI服务提供商: ${this.currentProvider}`);
@@ -250,6 +266,51 @@ class CloudAPIService {
         return data.choices[0].message.content.trim();
     }
 
+    // Gemini API 调用
+    async callGemini(userMessage) {
+        const config = this.apiConfigs.gemini;
+        if (config.apiKey === 'YOUR_GEMINI_API_KEY') {
+            throw new Error('Gemini API key is not set.');
+        }
+
+        const url = `${config.baseURL}?key=${config.apiKey}`;
+
+        const contents = this.conversationHistory.map(turn => ({
+            role: turn.role === 'assistant' ? 'model' : 'user',
+            parts: [{ text: turn.content }]
+        }));
+
+        const body = {
+            contents: contents,
+            system_instruction: {
+                parts: [{ text: this.getBellaSystemPrompt().content }]
+            },
+            generation_config: {
+                max_output_tokens: 150,
+                temperature: 0.8,
+                top_p: 0.9
+            }
+        };
+
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: config.headers,
+            body: JSON.stringify(body)
+        });
+
+        if (!response.ok) {
+            const errorBody = await response.text();
+            throw new Error(`Gemini API 错误: ${response.status} ${response.statusText} - ${errorBody}`);
+        }
+
+        const data = await response.json();
+        if (!data.candidates || data.candidates.length === 0) {
+            console.error('Gemini API returned no candidates:', data);
+            return '抱歉，我暂时无法回答。';
+        }
+        return data.candidates[0].content.parts[0].text.trim();
+    }
+
     // 清除对话历史
     clearHistory() {
         this.conversationHistory = [];
@@ -270,11 +331,14 @@ class CloudAPIService {
         
         if (provider === 'ernie') {
             return !!config.accessToken;
+        } else if (provider === 'gemini') {
+            return config.apiKey && config.apiKey !== 'YOUR_GEMINI_API_KEY';
         } else {
             return config.headers['Authorization'] && 
                    config.headers['Authorization'] !== 'Bearer YOUR_OPENAI_API_KEY' &&
                    config.headers['Authorization'] !== 'Bearer YOUR_QWEN_API_KEY' &&
-                   config.headers['Authorization'] !== 'Bearer YOUR_GLM_API_KEY';
+                   config.headers['Authorization'] !== 'Bearer YOUR_GLM_API_KEY' &&
+                   config.headers['Authorization'] !== 'Bearer YOUR_GEMINI_API_KEY'
         }
     }
 }
