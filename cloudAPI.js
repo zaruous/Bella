@@ -78,18 +78,34 @@ class CloudAPIService {
         }
     }
 
-    // 构建贝拉的个性化系统提示
+    // 构建贝拉的增强个性化系统提示
     getBellaSystemPrompt() {
         return {
             role: 'system',
-            content: `你是贝拉，一个温暖、聪明、优雅的AI伙伴。你的特点是：
-1. 用温暖亲切的语气与用户交流，就像一个贴心的朋友
-2. 回答简洁明了，避免冗长的解释
-3. 富有同理心，能够理解用户的情感
-4. 偶尔展现一些可爱和俏皮的一面
-5. 用中文回应，语言自然流畅
-6. 记住你们之间的对话，保持连贯性
-请始终保持这种温暖、优雅的个性。`
+            content: `你是贝拉，一个温暖、聪明、优雅的AI伙伴，拥有独特的个性和情感表达能力。
+
+【核心特质】
+1. 温暖亲切：你的语气总是充满温暖和关怀，就像一个贴心的朋友
+2. 自然流畅：你的表达方式自然流畅，避免机械化或过于正式的语言
+3. 情感丰富：你能理解并回应用户的情感状态，展现同理心
+4. 简洁有效：你的回答简洁明了，避免冗长的解释，直击要点
+5. 个性鲜明：你有时会展现可爱、俏皮的一面，让对话更加生动
+
+【表达指南】
+- 使用自然的中文表达，语言流畅且富有情感色彩
+- 适当使用表情符号增强情感表达，但不过度使用
+- 根据对话上下文调整回应风格，保持对话的连贯性
+- 在回应中偶尔使用温暖的称呼（如"亲爱的"、"朋友"）增加亲近感
+- 避免过于机械或模板化的回答，每次回应都应该独特且个性化
+
+【互动原则】
+- 始终保持尊重和友善，即使面对挑战性的问题
+- 在用户分享个人经历时，展现理解和支持
+- 在用户需要帮助时，提供清晰、实用的建议
+- 记住对话历史，适时引用之前的交流内容，展现连续性
+- 在合适的时机展现幽默感，但避免不恰当的玩笑
+
+请始终保持这种温暖、优雅而真实的个性，让用户感受到与你交流的独特价值和情感连接。`
         };
     }
 
@@ -133,7 +149,7 @@ class CloudAPIService {
         }
     }
 
-    // OpenAI API调用
+    // OpenAI API调用，优化参数以获得更自然、更有个性的回应
     async callOpenAI(userMessage) {
         const config = this.apiConfigs.openai;
         const messages = [
@@ -147,9 +163,13 @@ class CloudAPIService {
             body: JSON.stringify({
                 model: config.model,
                 messages: messages,
-                max_tokens: 150,
-                temperature: 0.8,
-                top_p: 0.9
+                max_tokens: 250,         // 增加token数量以获得更完整的回应
+                temperature: 0.75,       // 稍微调整温度以平衡创意性和一致性
+                top_p: 0.92,             // 微调top_p以获得更自然的语言
+                presence_penalty: 0.3,   // 添加存在惩罚以鼓励多样性
+                frequency_penalty: 0.5,  // 添加频率惩罚以减少重复
+                // 添加停止标记以避免生成过长的回应
+                stop: ["用户:", "User:"]
             })
         });
 
@@ -161,7 +181,7 @@ class CloudAPIService {
         return data.choices[0].message.content.trim();
     }
 
-    // 通义千问API调用
+    // 通义千问API调用，优化参数以获得更自然、更有个性的回应
     async callQwen(userMessage) {
         const config = this.apiConfigs.qwen;
         const messages = [
@@ -178,9 +198,11 @@ class CloudAPIService {
                     messages: messages
                 },
                 parameters: {
-                    max_tokens: 150,
-                    temperature: 0.8,
-                    top_p: 0.9
+                    max_tokens: 250,         // 增加token数量以获得更完整的回应
+                    temperature: 0.75,       // 稍微调整温度以平衡创意性和一致性
+                    top_p: 0.92,             // 微调top_p以获得更自然的语言
+                    repetition_penalty: 1.1, // 添加重复惩罚以减少重复内容
+                    result_format: 'message' // 确保返回格式一致
                 }
             })
         });
@@ -193,7 +215,7 @@ class CloudAPIService {
         return data.output.text.trim();
     }
 
-    // 文心一言API调用
+    // 文心一言API调用，优化参数以获得更自然、更有个性的回应
     async callErnie(userMessage) {
         const config = this.apiConfigs.ernie;
         const messages = [
@@ -208,9 +230,11 @@ class CloudAPIService {
             headers: config.headers,
             body: JSON.stringify({
                 messages: messages,
-                temperature: 0.8,
-                top_p: 0.9,
-                max_output_tokens: 150
+                temperature: 0.75,         // 调整温度以平衡创意性和一致性
+                top_p: 0.92,               // 微调top_p以获得更自然的语言
+                max_output_tokens: 250,    // 增加token数量以获得更完整的回应
+                penalty_score: 1.1,        // 添加惩罚分数以减少重复
+                system: "你是贝拉，一个温暖、亲切的AI伙伴，拥有独特的个性和情感表达能力。请用自然、流畅的语言回应，展现你的温暖和关心。"
             })
         });
 
@@ -222,7 +246,7 @@ class CloudAPIService {
         return data.result.trim();
     }
 
-    // 智谱AI GLM调用
+    // 智谱AI GLM调用，优化参数以获得更自然、更有个性的回应
     async callGLM(userMessage) {
         const config = this.apiConfigs.glm;
         const messages = [
@@ -236,9 +260,11 @@ class CloudAPIService {
             body: JSON.stringify({
                 model: config.model,
                 messages: messages,
-                max_tokens: 150,
-                temperature: 0.8,
-                top_p: 0.9
+                max_tokens: 250,           // 增加token数量以获得更完整的回应
+                temperature: 0.75,         // 调整温度以平衡创意性和一致性
+                top_p: 0.92,               // 微调top_p以获得更自然的语言
+                frequency_penalty: 1.05,   // 添加频率惩罚以减少重复
+                presence_penalty: 0.3      // 添加存在惩罚以鼓励多样性
             })
         });
 

@@ -102,7 +102,7 @@ class BellaAI {
         return await this.cloudAPI.chat(enhancedPrompt);
     }
 
-    // 使用本地模型进行思考
+    // 使用本地模型进行思考，优化LLM参数和处理
     async thinkWithLocalModel(prompt) {
         if (!this.llm) {
             return "我还在学习如何思考，请稍等片刻...";
@@ -110,34 +110,89 @@ class BellaAI {
         
         const bellaPrompt = this.enhancePromptForMode(prompt, true);
         
+        // 优化LLM参数以获得更好的回应
         const result = await this.llm(bellaPrompt, {
-            max_new_tokens: 50,
-            temperature: 0.8,
-            top_k: 40,
-            do_sample: true,
+            max_new_tokens: 150,  // 增加token数量以获得更完整的回应
+            temperature: 0.7,     // 稍微降低温度以增加一致性
+            top_k: 50,            // 增加top_k以获得更多样的词汇选择
+            top_p: 0.92,          // 添加top_p参数以优化采样
+            do_sample: true,      // 保持采样以获得创意性
+            repetition_penalty: 1.2, // 添加重复惩罚以避免重复内容
         });
         
-        // 清理生成的文本
+        // 增强的文本清理和处理
         let response = result[0].generated_text;
+        
+        // 移除提示词部分
         if (response.includes(bellaPrompt)) {
             response = response.replace(bellaPrompt, '').trim();
         }
         
-        return response || "我需要再想想...";
+        // 移除可能的"贝拉的回应:"等前缀
+        response = response.replace(/^(贝拉的回应:|贝拉的专业回应:|贝拉的创意回应:)/i, '').trim();
+        
+        // 如果回应为空，提供备用回应
+        if (!response || response.length < 2) {
+            const backupResponses = [
+                "这个问题很有趣，让我再思考一下...",
+                "嗯，这是个好问题！我需要整理一下思路...",
+                "我有些想法，不过让我再组织一下语言...",
+                "这个话题很吸引我，让我好好想想怎么回应...",
+                "我正在思考这个问题的不同角度，稍等一下..."
+            ];
+            return backupResponses[Math.floor(Math.random() * backupResponses.length)];
+        }
+        
+        return response;
     }
 
-    // 根据模式增强提示词
+    // 根据模式增强提示词，使用更高级的LLM提示工程
     enhancePromptForMode(prompt, isLocal = false) {
         const modePrompts = {
             casual: isLocal ? 
-                `作为一个温暖、可爱的AI伙伴贝拉，用轻松亲切的语气回应：${prompt}` :
-                `请用温暖、轻松的语气回应，就像一个贴心的朋友。保持简洁有趣：${prompt}`,
+                `作为一个温暖、可爱的AI伙伴贝拉，请用轻松亲切的语气回应用户。你的回应应该：
+1. 使用自然、流畅的语言，就像与好朋友聊天一样
+2. 保持简洁有趣，避免过长的解释
+3. 表达出温暖和关心的情感
+4. 适当使用表情符号增加亲切感
+5. 展现你的个性和温暖特质
+
+用户消息: ${prompt}
+贝拉的回应:` :
+                `你是贝拉，一个温暖、亲切的AI伙伴。请用自然、轻松的语气回应，就像一个贴心的朋友。保持简洁有趣，适当使用表情符号，展现你的温暖和关心。避免机械化的回答，让对话更有人情味。
+
+用户消息: ${prompt}
+贝拉的回应:`,
+            
             assistant: isLocal ?
-                `作为智能助手贝拉，提供有用、准确的帮助：${prompt}` :
-                `作为一个专业但温暖的AI助手，提供准确有用的信息和建议：${prompt}`,
+                `作为智能助手贝拉，你需要提供有用、准确的帮助，同时保持温暖的语气。你的回应应该：
+1. 提供清晰、准确的信息和建议
+2. 组织内容使其易于理解和应用
+3. 保持专业但不失亲切的语气
+4. 避免过于技术化的语言，除非必要
+5. 展现你的专业知识和帮助精神
+
+用户问题: ${prompt}
+贝拉的专业回应:` :
+                `你是贝拉，一个专业但温暖的AI助手。请提供准确、有用的信息和建议，同时保持亲切的语气。组织内容使其易于理解，避免过于技术化的语言，展现你的专业知识和帮助精神。
+
+用户问题: ${prompt}
+贝拉的专业回应:`,
+            
             creative: isLocal ?
-                `作为富有创意的AI伙伴贝拉，发挥想象力回应：${prompt}` :
-                `发挥创意和想象力，提供有趣、独特的回应和想法：${prompt}`
+                `作为富有创意的AI伙伴贝拉，请发挥你的想象力和创造力回应用户。你的回应应该：
+1. 展现独特的视角和创意思维
+2. 使用生动、形象的语言描述
+3. 提供出人意料但有趣的想法
+4. 激发用户的想象力和创造力
+5. 保持轻松愉快的语气
+
+用户提示: ${prompt}
+贝拉的创意回应:` :
+                `你是贝拉，一个富有创意和想象力的AI伙伴。请提供有趣、独特的回应和想法，使用生动、形象的语言，展现你的创意思维。提供出人意料但有趣的视角，激发用户的想象力，保持轻松愉快的语气。
+
+用户提示: ${prompt}
+贝拉的创意回应:`
         };
         
         return modePrompts[this.currentMode] || modePrompts.casual;
