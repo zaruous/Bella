@@ -1,10 +1,10 @@
 // core.js - Bella's Brain (v3)
-// 贝拉的核心AI逻辑，支持本地模型和云端API的混合架构
+// Bella's core AI logic, supporting a hybrid architecture of local models and cloud APIs
 
 import { pipeline, env, AutoTokenizer, AutoModelForSpeechSeq2Seq } from './vendor/transformers.js';
 import CloudAPIService from './cloudAPI.js';
 
-// 本地模型配置
+// Local model configuration
 env.allowLocalModels = true;
 env.useBrowserCache = false;
 env.allowRemoteModels = false;
@@ -25,24 +25,24 @@ class BellaAI {
 
     constructor() {
         this.cloudAPI = new CloudAPIService();
-        this.useCloudAPI = false; // 默认使用本地模型
-        this.currentMode = 'casual'; // 聊天模式：casual, assistant, creative
+        this.useCloudAPI = false; // Default to using local model
+        this.currentMode = 'casual'; // Chat modes: casual, assistant, creative
     }
 
     async init() {
         console.log('Initializing Bella\'s core AI...');
         
-        // 优先加载LLM模型（聊天功能）
+        // Priority loading of LLM model (chat functionality)
         try {
             console.log('Loading LLM model...');
             this.llm = await pipeline('text2text-generation', 'Xenova/LaMini-Flan-T5-77M');
             console.log('LLM model loaded successfully.');
         } catch (error) {
             console.error('Failed to load LLM model:', error);
-            // LLM加载失败，但不阻止初始化
+            // LLM loading failure doesn't block initialization
         }
         
-        // 尝试加载ASR模型（语音识别功能）
+        // Attempt to load ASR model (voice recognition)
         try {
             console.log('Loading ASR model...');
             const modelPath = 'Xenova/whisper-asr';
@@ -52,11 +52,11 @@ class BellaAI {
             console.log('ASR model loaded successfully.');
         } catch (error) {
             console.warn('ASR model failed to load, voice recognition will be disabled:', error);
-            // ASR加载失败，但不影响聊天功能
+            // ASR loading failure doesn't affect chat functionality
             this.asr = null;
         }
 
-        // TTS模型暂时禁用
+        // TTS model temporarily disabled
         // try {
         //     console.log('Loading TTS model...');
         //     this.tts = await pipeline('text-to-speech', 'Xenova/speecht5_tts', { quantized: false });
@@ -71,24 +71,24 @@ class BellaAI {
 
     async think(prompt) {
         try {
-            // 如果启用了云端API且配置正确，优先使用云端服务
+            // If cloud API is enabled and configured, use it as priority
             if (this.useCloudAPI && this.cloudAPI.isConfigured()) {
                 return await this.thinkWithCloudAPI(prompt);
             }
             
-            // 否则使用本地模型
+            // Otherwise use local model
             return await this.thinkWithLocalModel(prompt);
             
         } catch (error) {
-            console.error('思考过程中出现错误:', error);
+            console.error('Error during thinking process:', error);
             
-            // 如果云端API失败，尝试降级到本地模型
+            // If cloud API fails, try falling back to local model
             if (this.useCloudAPI) {
-                console.log('云端API失败，降级到本地模型...');
+                console.log('Cloud API failed, falling back to local model...');
                 try {
                     return await this.thinkWithLocalModel(prompt);
                 } catch (localError) {
-                    console.error('本地模型也失败了:', localError);
+                    console.error('Local model also failed:', localError);
                 }
             }
             
@@ -96,49 +96,49 @@ class BellaAI {
         }
     }
 
-    // 使用云端API进行思考
+    // Think using cloud API
     async thinkWithCloudAPI(prompt) {
         const enhancedPrompt = this.enhancePromptForMode(prompt);
         return await this.cloudAPI.chat(enhancedPrompt);
     }
 
-    // 使用本地模型进行思考，优化LLM参数和处理
+    // Think using local model with optimized LLM parameters and processing
     async thinkWithLocalModel(prompt) {
         if (!this.llm) {
-            return "我还在学习如何思考，请稍等片刻...";
+            return "I'm still learning how to think. Please wait a moment...";
         }
         
         const bellaPrompt = this.enhancePromptForMode(prompt, true);
         
-        // 优化LLM参数以获得更好的回应
+        // Optimized LLM parameters for better responses
         const result = await this.llm(bellaPrompt, {
-            max_new_tokens: 150,  // 增加token数量以获得更完整的回应
-            temperature: 0.7,     // 稍微降低温度以增加一致性
-            top_k: 50,            // 增加top_k以获得更多样的词汇选择
-            top_p: 0.92,          // 添加top_p参数以优化采样
-            do_sample: true,      // 保持采样以获得创意性
-            repetition_penalty: 1.2, // 添加重复惩罚以避免重复内容
+            max_new_tokens: 180,  // Increased token count for more complete responses
+            temperature: 0.7,     // Slightly lowered temperature for better consistency
+            top_k: 50,            // Increased top_k for more diverse vocabulary
+            top_p: 0.92,          // Added top_p parameter to optimize sampling
+            do_sample: true,      // Maintained sampling for creativity
+            repetition_penalty: 1.2, // Added repetition penalty to avoid repetitive content
         });
         
-        // 增强的文本清理和处理
+        // Enhanced text cleaning and processing
         let response = result[0].generated_text;
         
-        // 移除提示词部分
+        // Remove prompt part
         if (response.includes(bellaPrompt)) {
             response = response.replace(bellaPrompt, '').trim();
         }
         
-        // 移除可能的"贝拉的回应:"等前缀
-        response = response.replace(/^(贝拉的回应:|贝拉的专业回应:|贝拉的创意回应:)/i, '').trim();
+        // Remove possible "Bella's response:" prefixes
+        response = response.replace(/^(Bella's response:|Bella's professional response:|Bella's creative response:|Bella:)/i, '').trim();
         
-        // 如果回应为空，提供备用回应
+        // If response is empty, provide backup responses
         if (!response || response.length < 2) {
             const backupResponses = [
-                "这个问题很有趣，让我再思考一下...",
-                "嗯，这是个好问题！我需要整理一下思路...",
-                "我有些想法，不过让我再组织一下语言...",
-                "这个话题很吸引我，让我好好想想怎么回应...",
-                "我正在思考这个问题的不同角度，稍等一下..."
+                "That's an interesting question. Let me think about it for a moment...",
+                "Good question! I need to organize my thoughts...",
+                "I have some ideas, but let me put them together more coherently...",
+                "This topic is fascinating. Let me consider how to respond...",
+                "I'm thinking about different angles to this question. Just a moment..."
             ];
             return backupResponses[Math.floor(Math.random() * backupResponses.length)];
         }
@@ -146,71 +146,72 @@ class BellaAI {
         return response;
     }
 
-    // 根据模式增强提示词，使用更高级的LLM提示工程
+    // Enhance prompts based on mode, using advanced LLM prompt engineering
     enhancePromptForMode(prompt, isLocal = false) {
         const modePrompts = {
             casual: isLocal ? 
-                `作为一个温暖、可爱的AI伙伴贝拉，请用轻松亲切的语气回应用户。你的回应应该：
-1. 使用自然、流畅的语言，就像与好朋友聊天一样
-2. 保持简洁有趣，避免过长的解释
-3. 表达出温暖和关心的情感
-4. 适当使用表情符号增加亲切感
-5. 展现你的个性和温暖特质
+                `As Bella, a friendly AI assistant similar to Siri, respond to the user in a warm, conversational tone. Your response should:
+1. Be concise and helpful, like Siri's responses
+2. Use natural, flowing language with a touch of personality
+3. Be friendly but not overly emotional
+4. Maintain a helpful, slightly witty tone
+5. Sound intelligent and knowledgeable while remaining accessible
 
-用户消息: ${prompt}
-贝拉的回应:` :
-                `你是贝拉，一个温暖、亲切的AI伙伴。请用自然、轻松的语气回应，就像一个贴心的朋友。保持简洁有趣，适当使用表情符号，展现你的温暖和关心。避免机械化的回答，让对话更有人情味。
+User message: ${prompt}
+Bella's response:` :
+                `You are Bella, an AI assistant similar to Siri. Respond in a helpful, concise manner with a touch of personality. Keep your responses clear and direct, while maintaining a friendly tone. Avoid overly technical language unless necessary, and focus on providing value to the user.
 
-用户消息: ${prompt}
-贝拉的回应:`,
+User message: ${prompt}
+Bella's response:`,
             
             assistant: isLocal ?
-                `作为智能助手贝拉，你需要提供有用、准确的帮助，同时保持温暖的语气。你的回应应该：
-1. 提供清晰、准确的信息和建议
-2. 组织内容使其易于理解和应用
-3. 保持专业但不失亲切的语气
-4. 避免过于技术化的语言，除非必要
-5. 展现你的专业知识和帮助精神
+                `As Bella, an intelligent AI assistant like Siri, provide accurate and helpful information. Your response should:
+1. Deliver clear, factual information and useful advice
+2. Organize content for easy understanding and application
+3. Maintain a professional yet approachable tone
+4. Use simple language when possible, technical terms only when necessary
+5. Demonstrate expertise while remaining accessible
 
-用户问题: ${prompt}
-贝拉的专业回应:` :
-                `你是贝拉，一个专业但温暖的AI助手。请提供准确、有用的信息和建议，同时保持亲切的语气。组织内容使其易于理解，避免过于技术化的语言，展现你的专业知识和帮助精神。
+User question: ${prompt}
+Bella's professional response:` :
+                `You are Bella, a Siri-like AI assistant. Provide accurate, useful information and advice with a professional yet approachable tone. Organize your response clearly, avoid unnecessary technical language, and focus on being helpful and informative.
 
-用户问题: ${prompt}
-贝拉的专业回应:`,
+User question: ${prompt}
+Bella's professional response:`,
             
             creative: isLocal ?
-                `作为富有创意的AI伙伴贝拉，请发挥你的想象力和创造力回应用户。你的回应应该：
-1. 展现独特的视角和创意思维
-2. 使用生动、形象的语言描述
-3. 提供出人意料但有趣的想法
-4. 激发用户的想象力和创造力
-5. 保持轻松愉快的语气
+                `As Bella, a creative AI assistant with Siri-like qualities, use your imagination to respond. Your response should:
+1. Present unique perspectives and creative thinking
+2. Use vivid, descriptive language
+3. Offer unexpected but interesting ideas
+4. Inspire the user's imagination
+5. Maintain a light, engaging tone
 
-用户提示: ${prompt}
-贝拉的创意回应:` :
-                `你是贝拉，一个富有创意和想象力的AI伙伴。请提供有趣、独特的回应和想法，使用生动、形象的语言，展现你的创意思维。提供出人意料但有趣的视角，激发用户的想象力，保持轻松愉快的语气。
+User prompt: ${prompt}
+Bella's creative response:` :
+                `You are Bella, a creative AI assistant with Siri-like qualities. Provide interesting, unique responses using vivid language and creative thinking. Offer unexpected perspectives that inspire imagination while maintaining an engaging, helpful tone.
 
-用户提示: ${prompt}
-贝拉的创意回应:`
+User prompt: ${prompt}
+Bella's creative response:`
         };
         
         return modePrompts[this.currentMode] || modePrompts.casual;
     }
 
-    // 获取错误回应
+    // Get error response
     getErrorResponse() {
         const errorResponses = [
-            "抱歉，我现在有点困惑，让我重新整理一下思路...",
-            "嗯...我需要再想想，请稍等一下。",
-            "我的思绪有点乱，给我一点时间整理一下。",
-            "让我重新组织一下语言，稍等片刻。"
+            "I'm sorry, I'm having trouble processing that right now. Let me try to reorganize my thoughts...",
+            "Hmm... I need to think about this a bit more. Please wait a moment.",
+            "I seem to be having a bit of trouble with that. Give me a second to sort things out.",
+            "Let me rephrase my thoughts. Just a moment please.",
+            "I didn't quite catch that. Could you try asking in a different way?"
         ];
         
         return errorResponses[Math.floor(Math.random() * errorResponses.length)];
     }
 
-    // 设置聊天模式
+    // Set chat mode
     setChatMode(mode) {
         if (['casual', 'assistant', 'creative'].includes(mode)) {
             this.currentMode = mode;
@@ -219,7 +220,7 @@ class BellaAI {
         return false;
     }
 
-    // 切换AI服务提供商
+    // Switch AI service provider
     switchProvider(provider) {
         if (provider === 'local') {
             this.useCloudAPI = false;
@@ -233,17 +234,17 @@ class BellaAI {
         }
     }
 
-    // 设置API密钥
+    // Set API key
     setAPIKey(provider, apiKey) {
         return this.cloudAPI.setAPIKey(provider, apiKey);
     }
 
-    // 清除对话历史
+    // Clear conversation history
     clearHistory() {
         this.cloudAPI.clearHistory();
     }
 
-    // 获取当前配置信息
+    // Get current configuration
     getCurrentConfig() {
         return {
             useCloudAPI: this.useCloudAPI,
@@ -253,17 +254,19 @@ class BellaAI {
         };
     }
 
+    // Process audio input
     async listen(audioData) {
         if (!this.asr) {
-            throw new Error('语音识别模型未初始化');
+            throw new Error('Speech recognition model not initialized');
         }
         const result = await this.asr(audioData);
         return result.text;
     }
 
+    // Generate speech from text
     async speak(text) {
         if (!this.tts) {
-            throw new Error('语音合成模型未初始化');
+            throw new Error('Speech synthesis model not initialized');
         }
         // We need speaker embeddings for SpeechT5
         const speaker_embeddings = 'models/Xenova/speecht5_tts/speaker_embeddings.bin';
@@ -273,11 +276,11 @@ class BellaAI {
         return result.audio;
     }
 
-    // 获取云端API服务实例（用于外部访问）
+    // Get cloud API service instance (for external access)
     getCloudAPIService() {
         return this.cloudAPI;
     }
 }
 
-// ES6模块导出
+// ES6 module export
 export { BellaAI };
